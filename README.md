@@ -3,6 +3,8 @@
 > 채용 공고를 분석해 맞춤 면접 질문을 생성하고,  
 > 답변의 습관어·침묵·논리 구조를 분석하는 AI 면접 스피치 코칭 서비스
 
+🏆 **SWYP 웹 13기 대상 수상**
+
 <p>
   <a href="https://u-u-g-frontend.vercel.app/">
     <strong>🌐 서비스 둘러보기</strong>
@@ -12,8 +14,6 @@
     <strong>🏆 수상 인터뷰</strong>
   </a>
 </p>
-
-🏆 **SWYP 웹 13기 대상 수상**
 
 <details>
 <summary><strong>🔑 테스트 계정 확인하기</strong></summary>
