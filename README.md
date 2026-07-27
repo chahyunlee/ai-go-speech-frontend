@@ -35,31 +35,54 @@
 
 ### 1. 홈 및 연습 관리
 
-![음어그 홈 화면](./assets/uug-home.png)
+<p align="center">
+  <img
+    src="./assets/uug-home.png"
+    alt="음어그 홈 화면"
+    width="750"
+  />
+</p>
 
 ### 2. 실시간 문답 진행
 
-![음어그 면접 타이머 화면](./assets/uug-countdown.png)
+<p align="center">
+  <img
+    src="./assets/uug-countdown.png"
+    alt="음어그 홈 화면"
+    width="750"
+  />
+</p>
 
 ### 3. 면접 답변 연습
 
-![음어그 면접 연습 화면](./assets/uug-interview.png)
-
+<p align="center">
+  <img
+    src="./assets/uug-interview.png"
+    alt="음어그 면접 연습 화면"
+    width="750"
+  />
+</p>
 
 ### 4. AI 분석 리포트
 
-![음어그 분석 리포트](./assets/uug-report.png)
+<p align="center">
+  <img
+    src="./assets/uug-report.png"
+    alt="음어그 분석 리포트 화면"
+    width="750"
+  />
+</p>
 
-
-## 🎯 핵심 기능
+## 핵심 기능
 
 - 습관어 및 침묵 구간 실시간 감지
 - 연습 중 즉각적인 시각 피드백 제공 (음량·데시벨·침묵 경고)
 - 답변별 AI 분석 리포트 제공
 - 연습 이력·랭킹을 통한 반복 학습 유도
 
+<br>
 
-## 🔄 면접 생성 흐름 구조도
+## SSE 기반 면접 생성 흐름 구조도
 
 채용 공고를 분석해 맞춤 면접 질문을 생성하고, 질문이 준비되면 면접을 시작하는 전체 흐름입니다.
 
@@ -94,74 +117,96 @@ class A,B,D,E,F,H action;
 
 ### 구현 방식
 
-- **공고 분석** : `POST /job-postings`
-- **공고 분석 결과** : `SSE /job-postings/{uuid}/stream`
-- **공고 상세 조회** : `GET /job-postings/{uuid}`
-- **회사명 보완** : `PATCH /job-postings/{uuid}`
-- **면접 세션 생성** : `POST /interview-sessions`
-- **질문 생성 결과** : `SSE /interview-sessions/{uuid}/stream`
+- 공고 분석 : `POST /job-postings`
+- 공고 분석 결과 : `SSE /job-postings/{uuid}/stream`
+- 공고 상세 조회 : `GET /job-postings/{uuid}`
+- 회사명 보완 : `PATCH /job-postings/{uuid}`
+- 면접 세션 생성 : `POST /interview-sessions`
+- 질문 생성 결과 : `SSE /interview-sessions/{uuid}/stream`
 
-공고 분석과 질문 생성은 시간이 소요되는 작업이므로 **SSE(Server-Sent Events)** 를 이용해 완료 이벤트를 수신했습니다. 
-공고에서 회사명을 추출하지 못한 경우에는 사용자 입력을 받아 공고 정보를 보완한 뒤 동일한 흐름으로 면접 세션을 생성하도록 구현했습니다.
+<br>
 
+> [!NOTE]
+> 공고 분석과 면접 질문 생성은 AI 모델이 수행하는 작업으로 처리 시간이 일정하지 않아 **SSE(Server-Sent Events)** 를 이용해 작업 완료 이벤트를 실시간으로 수신하도록 구현했습니다. 사용자는 별도의 새로고침 없이 진행 상태를 확인할 수 있으며, 작업이 완료되면 즉시 다음 단계로 이어집니다.
+>
+> 또한 공고에서 회사명을 추출하지 못하는 경우에는 사용자 입력을 받아 공고 정보를 보완한 뒤 동일한 흐름으로 면접 세션과 질문 생성을 이어가도록 설계하여 서비스 흐름이 중단되지 않도록 했습니다.
+>
+> 이 과정에서 **`AbortController`를 활용해 작업 완료 또는 실패 시 SSE 연결을 즉시 종료**하고, **중복 연결을 방지**하여 불필요한 네트워크 사용과 리소스 누수를 최소화했습니다.
 
-### ⚙️ Core
+<br>
 
-- **Bun** — 빠른 패키지 관리 및 실행 환경
-- **Next.js 16 (App Router)** — 라우트 그룹 기반의 React 프레임워크 (Turbopack)
-- **React 19** — UI 라이브러리
-- **TypeScript 5** — 정적 타입 기반 안정적인 개발 환경
+## 🛠️ 기술 스택
 
+### Core
 
-### 🎨 Styling
+![](https://img.shields.io/badge/Bun-000000?style=for-the-badge&logo=bun&logoColor=white)
+![](https://img.shields.io/badge/Next.js_16-000000?style=for-the-badge&logo=nextdotjs)
+![](https://img.shields.io/badge/React_19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![](https://img.shields.io/badge/TypeScript_5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 
-- **Tailwind CSS 4** — 빠르고 일관된 UI 개발을 위한 스타일링
-- **Pretendard (subset)** — 초기 preload 용량을 줄인 서브셋 폰트
+### Styling
 
+![](https://img.shields.io/badge/TailwindCSS_4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![](https://img.shields.io/badge/Pretendard-000000?style=for-the-badge)
 
-### 🔄 Data Fetching
+### Data Fetching
 
-- **TanStack Query 5** — 서버 상태 관리 및 캐싱 처리
-- **Axios** — REST API 통신 (`publicClient` / `privateClient` + 토큰 자동 재발급)
-- **@microsoft/fetch-event-source** — 인증 헤더를 실은 SSE 실시간 스트림 수신
+![](https://img.shields.io/badge/TanStack_Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=white)
+![](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios)
+![](https://img.shields.io/badge/SSE-Fetch_Event_Source-7C3AED?style=for-the-badge)
 
+### Browser API
 
-### 🌐 Browser API
+![](https://img.shields.io/badge/Web_Speech_API-4285F4?style=for-the-badge)
+![](https://img.shields.io/badge/Web_Audio_API-EA4335?style=for-the-badge)
 
-- **Web Speech API** — `ko-KR` 실시간 음성 인식(STT)으로 습관어 텍스트 추출
-- **Web Audio API** — 음량/데시벨 측정 및 침묵 구간 감지
+### Code Quality
 
+![](https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint)
+![](https://img.shields.io/badge/Prettier-F7B93E?style=for-the-badge&logo=prettier&logoColor=black)
 
-### 🧹 Code Quality
+### Testing
 
-- **ESLint** — 코드 품질 및 잠재적 오류 방지
-- **Prettier** — 코드 스타일 자동 정렬
+![](https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=playwright)
 
+### Analytics
 
-### 🧪 Testing
+![](https://img.shields.io/badge/Google_Analytics_4-E37400?style=for-the-badge&logo=googleanalytics)
 
-- **Playwright** — 사용자 시나리오 기반 E2E 테스트
+<br>
 
+## ✨ 주요 기능
 
-### 📈 Analytics
+- **인증**
+  - 이메일 회원가입·로그인
+  - OAuth2 소셜 로그인
+  - 토큰 자동 재발급
 
-- **Google Analytics 4** — 사용자 행동 분석
+- **채용공고 맞춤 면접**
+  - 원티드·잡코리아 URL 분석
+  - AI 맞춤 질문 생성
 
+- **실시간 스피치 분석**
+  - 습관어
+  - 음량·데시벨
+  - 침묵 구간 감지
 
+- **실시간 진행 상태**
+  - SSE 기반 공고 분석
+  - 질문 생성
+  - 리포트 완료 상태 반영
 
-## 🚀 주요 기능
+- **AI 분석 리포트**
 
-- 🔐 **인증** — 이메일 회원가입·로그인, 소셜(OAuth2) 로그인, 비밀번호 재설정, 토큰 자동 재발급
-- 🧾 **채용공고 맞춤 면접** — 원티드·잡코리아 공고 URL 분석(크롤링) → AI 맞춤 질문 자동 생성
-- 🎤 **실시간 스피치 분석** — 습관어(음/어/그), 발화 음량·데시벨, 침묵 구간 실시간 감지
-- 🔴 **실시간 진행 상태 수신** — SSE로 공고 분석·질문 생성·리포트 완료 상태를 실시간 반영
-- 📊 **AI 분석 리포트** — 질문별 답변 분석 및 종합 리포트 제공
-- 🗂️ **연습 이력 관리** — 지난 면접 리포트 조회 및 상세 확인
-- 🏆 **랭킹** — 연습 결과 기반 랭킹 제공
-- 🗓️ **면접 커리큘럼·일정** — 홈 화면 일정 관리 및 추천 커리큘럼
-- 👤 **프로필 관리** — S3 기반 프로필 이미지 업로드/삭제, 닉네임·비밀번호 변경
+- **연습 이력 관리**
 
+- **랭킹**
 
+- **면접 커리큘럼**
+
+- **프로필 관리**
+
+<br>
 
 ## 🗂️ 프로젝트 구조
 
@@ -181,7 +226,7 @@ src/
 ```
 
 
-## 🛠️ Getting Started
+## 🛠️ 시작하기
 
 ### 1. 환경 변수 설정
 
@@ -202,9 +247,13 @@ bun install
 bun dev
 ```
 
+<br>
+
+> [!TIP]
+> 본 프로젝트는 **Bun**을 패키지 매니저 및 런타임으로 사용합니다. Node.js 대신 Bun 환경에서 실행하는 것을 권장합니다.
 > `bun start`로 프로덕션 빌드를 3000번 포트에서 실행할 수 있습니다.
 
-
+<br>
 
 ## 📜 Scripts
 
@@ -214,10 +263,9 @@ bun build            # 프로덕션 빌드
 bun start            # 프로덕션 서버 실행 (:3000)
 bun test:playwright  # E2E 테스트
 ```
+<br>
 
-
-
-## 🧹 Code Convention
+## 🧹 코드 컨벤션
 
 ```bash
 bun lint         # lint (자동 수정)
@@ -225,16 +273,20 @@ bun lint:check   # lint 검사만
 bun format       # 코드 포맷팅
 bun type-check   # 타입 검사
 ```
+<br>
 
+## ✨ 특징
 
-## 💡 특징
+<br>
 
-- 🎯 "음 / 어 / 그"와 같은 **습관어에 특화**된 서비스
-- 🔴 **SSE 실시간 스트림**으로 분석·생성 과정을 지연 없이 반영 (실패 시 폴링 폴백)
-- 📊 **AI 기반 피드백** 리포트 시스템
-- 🔁 **리포트 + 이력 + 랭킹**으로 반복 학습을 유도하는 구조
+> [!IMPORTANT]
+> 면접 질문 생성과 AI 분석은 **SSE 기반 실시간 스트림**으로 처리하여 사용자가 결과를 기다리는 동안 진행 상태를 즉시 확인할 수 있도록 구현했습니다.
 
+- AI 기반 면접 질문 및 피드백 제공
+- "음 / 어 / 그"와 같은 습관어 분석
+- 리포트, 이력, 랭킹을 통한 반복 학습 지원
 
+<br>
 
 ## 👀 타겟 사용자
 
